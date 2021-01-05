@@ -1,134 +1,108 @@
-import React,{useState} from 'react';
-import { render } from 'react-dom';
-import Images from './Images'
+import React, { useState } from "react";
 
-function Form(props) {
 
-    const [validation, setValidation] = useState({
-        firstNameValidError: "",
-        lastNameValidError: "",
-        emailValidError: "",
-        phoneValidError: "",
-        firstNameValid: false,
-        lastNameValid: false,
-        emailValid: false,
-        phoneValid: false
-    })
+const Form = (props) => {
+  const flag=false;
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
 
-    const [details , setDetails] = useState({
-        firstName:"" , lastName:"" , email:"" , phone:""
-    })
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    sendFeedback("template_lshur4o", {
+      name:name,
+      phone:phone,
+      email:email,
+      message:message,
+      product:props.location.data && props.location.data.map((item)=>item.title),
+    },true);
+    sendFeedback("template_lohpcks", {
+      name:name,
+      email:email,
+      product:props.location.data && props.location.data.map((item)=>item.title),
+      price:props.location.data && props.location.data.reduce((x,y) => parseInt(x)+ parseInt(y.price),0),
+    },false);
+  };
 
-    const firstNameVal = (e) => {
-        let reg = /^[\sa-zA-Zא-ת]+$/;
-        let value = e.target.value;
-        setDetails({...details , firstName: value});
-        if (value == "")
-            setValidation({ ...validation, firstNameValidError: "על השם אסור להיות ריק", firstNameValid: false })
-        else if (value.length < 2)
-            setValidation({ ...validation, firstNameValidError: "על השם להיות בעל יותר מ-2 אותיות", firstNameValid: false })
-        else if (!reg.test(value))
-            setValidation({ ...validation, firstNameValidError: "על השם להכיל אותיות בלבד", firstNameValid: false })
-        else setValidation({ ...validation, firstNameValidError: "", firstNameValid: true })
-    }
-    const lastNameVal = (e) => {
-        let reg = /^[\sa-zA-Zא-ת]+$/;
-        let value = e.target.value;
-        setDetails({...details , lastName: value});
-        if (value == "")
-            setValidation({ ...validation, lastNameValidError: "על שם המשפחה אסור להיות ריק", lastNameValid: false })
-        else if (value.length < 2)
-            setValidation({ ...validation, lastNameValidError: "על שם המשפחה להיות בעל יותר מ-2 אותיות", lastNameValid: false })
-        else if (!reg.test(value))
-            setValidation({ ...validation, lastNameValidError: "על שם המשפחה להכיל אותיות בלבד", lastNameValid: false })
-        else setValidation({ ...validation, lastNameValidError: "", lastNameValid: true })
-    }
-    const emailVal = (e) => {
-        let reg = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        let value = e.target.value;
-        setDetails({...details , email: value});
-        if (value == "")
-            setValidation({ ...validation, emailValidError: "על המייל אסור להיות ריק", emailValid: false })
-        else if (!reg.test(value))
-            setValidation({ ...validation, emailValidError: "אנא הכנס מייל תקין", emailValid: false })
-        else setValidation({ ...validation, emailValidError: "", emailValid: true })
-    }
-    const phoneVal = (e) => {
-        let reg = /^0\d([\d]{0,1})([-]{0,1})\d{8}$/;
-        let value = e.target.value;
-        setDetails({...details , phone: value});
-        if (value == "")
-            setValidation({ ...validation, phoneValidError: "על הפלאפון אסור להיות ריק", phoneValid: false })
-        else if (!reg.test(value))
-            setValidation({ ...validation, phoneValidError: "אנא הכנס מספר פלאפון תקין", phoneValid: false })
-        else setValidation({ ...validation, phoneValidError: "", phoneValid: true })
-    }
-    const submitForm = (e) => {
-        e.preventDefault();
-        let data = {
-            titleProdoct: props.location.state.item.title,
-            priceProduct: props.location.state.item.price,
-            userFirsName: details.firstName,
-            userLastName: details.lastName,
-            userEmail: details.email,
-            userPhone: details.phone
-        }
-        if (validation.firstNameValid == true && validation.lastNameValid == true && validation.emailValid == true && validation.phoneValid == true) {
-            fetch('http://localhost:3001', {
-                method: 'post',
-                body: JSON.stringify(data)
-            }).then(function (res) {
-                return res.json();
-            }).then(function (res) {
-            });
+  const sendFeedback = (templateId, variables,flag) => {
+    window.emailjs.send("service_j3vmcyj", templateId, variables) .then((res) => {
+      if(flag)
+      {alert('הפרטים שלך נשלחו אלינו בהצלחה')}
 
-        }
-        alert('הפרטים שלך נשלחו אלינו בהצלחה ')
-    }
-
-return(
-    <div >
-        <div  style={{textAlign:"center"} }>
-        <h1 className="GlabalTitle" >Best Product</h1>
-            </div>
-            <br/>
-            <div className="row justify-content-center ">
-            <form  className="Form" onSubmit={submitForm} >
-              <h4 style={{float:"right"}} >:הכנס את פרטיך</h4> 
-              <br/>  <br/>
-                    <div >
-                    <label  className= "FormLabel">:שם פרטי</label>
-                    <input  dir="rtl" value={details.firstName}  className="FormInput" type="text"  onChange={firstNameVal} />
-                    <div className="validationError" >{validation.firstNameValidError}</div>
-                    </div>       
-                    <br/>
-                    <div >
-                    <label  className= "FormLabel">:שם משפחה</label>
-                    <input  dir="rtl" value={details.lastName}  className= "FormInput" type="text" onChange={lastNameVal} />
-                    <div className="validationError">{validation.lastNameValidError}</div>
-                    </div >   
-                    <br/>    
-                    <div >
-                    <label  className= "FormLabel" >:מספר טלפון</label>
-                    <input value={details.phone} dir="rtl" className= "FormInput" type="phone" onChange={phoneVal} />
-                    <div className="validationError">{validation.phoneValidError}</div>
-                    </div>   
-                    <br/>    
-                    <div>
-                    <label  className= "FormLabel">:אימייל</label>
-                    <input value={details.email} className= "FormInput" type="Email"  onChange={emailVal}/>
-                    <div className="validationError">{validation.emailValidError}</div>
-                    </div>
-                    <br/>
-                    <div className="form-group">
-                    <button type="submit" className="btn btn-primary btn-block btnSubmit">שלח</button>
-                    </div>
-            </form>
-            
-            </div>
+        console.log('success !');
+        setName("");
+        setPhone("");
+        setEmail("");
+        setMessage("");
         
-    </div>
+      })
+      .catch(
+        (err) =>
+          document.querySelector('.form-message').innerHTML =
+            "Une erreur s'est produite, veuillez réessayer.")
+  };
 
-) }
+  return (
+<div className="Formulaire">
+    <form className="contact-form">
+      <h2>Best Product</h2>
+      <h4>הכנס פרטיך ונחזור אליך בהקדם</h4>
+      <div className="form-content">
+        <input
+          type="text"
+          id="name"
+          name="name"
+          onChange={(e) => setName(e.target.value)}
+          placeholder="שם מלא"
+          value={name}
+          autoComplete="off"
+          dir="rtl"
+        />
+
+        <input
+          type="text"
+          id="phone"
+          name="phone"
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder="טלפון"
+          value={phone}
+          dir="rtl"
+        />
+        <div className="email-content">
+          <label id="not-mail">Email non valide</label>
+          <input
+          dir="rtl"
+            type="mail"
+            id="email"
+            name="email"
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="מייל"
+            value={email}
+            autoComplete="off"
+          />
+        </div>
+        <textarea
+          id="message"
+          name="message"
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="אם יש לך בקשה מסויימת כתוב אותה כאן"
+          value={message}
+          dir="rtl"
+        />
+ </div>
+
+      <input
+        className="button"
+        type="button"
+        value="שליחה"
+        onClick={handleSubmit}
+      />
+      <div className="form-message"></div>
+    </form>
+
+</div>
+  );
+};
 
 export default Form;

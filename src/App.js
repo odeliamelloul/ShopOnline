@@ -1,6 +1,6 @@
 import React from 'react';
 import FrontPage from './Components/FrontPage';
-import bag from './Components/bag';
+import bag from './Components/Bag';
 import Form from './Components/Form';
 import { BrowserRouter as  Switch, Route } from 'react-router-dom';
 

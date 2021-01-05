@@ -5,14 +5,11 @@ import FreeSolo from './FreeSolo';
 import bag from '../bag.png'; 
 
 function FrontPage(props) {
-
-    
     const[products,setProducts]=useState([]);
     const[search, setSearch] = useState([]);
     const[NumOfItem,setNumOfItem]=useState([]);
     const[addProduct,setAddProduct]=useState([]);
-  
-
+    
     useEffect(() => {
       const fetchData=async ()=>
        {
@@ -37,9 +34,10 @@ function FrontPage(props) {
         }
 
       return (
-        <div style={{alignContent:"center"} }>
+        <div className="FrontPage" style={{alignContent:"center"} }>
         <view className="container">
          <img src={bag} onClick={PathToBag} />
+         <h7 className="tel">שרות לקוחות 09-8320004</h7>
          <text className="centered">{NumOfItem}</text>
         </view> 
           <div className="FreeSolo">

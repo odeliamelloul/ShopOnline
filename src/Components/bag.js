@@ -3,59 +3,64 @@ import Images from './Images';
 import bin from '../bin.png';
 
 
-function bag(props){
+function Bag(props){
+
+    const MyBag=props.location.state.addProduct;
     
-    var bag=props.location.state.addProduct
     var TotalPrice=0;
 
-    function RemoveFromBag(key)
-    {
-        bag.filter((item)=>item.key!=key)
+    const RemoveFromBag=(key)=> {
+    MyBag.filter((item)=>item.key!=key);
     }
 
-    const PassToForm= (item,key)=> {props.history.push({ pathname: '/Form', data:TotalPrice })}
-    if (bag)
+    
+    const click=()=>{
+        if(TotalPrice)
+            PassToForm()
+        else
+        {
+            if (window.confirm('תיק הקניות שלך ריק אנא חזור לעמוד הבית בכדי לבחור מוצרים'))
+            {
+                this.props.history.push(''); 
+            }
+        } 
+    }
+    const PassToForm= ()=> {props.history.push({ pathname: '/Form', data:MyBag})}
+    if (MyBag)
     {
    return(
 
     <div  style={{textAlign:"center"} } className="produstWasSelect" >
             <h3 className="BagTitle"> תיק הקניות</h3>
-            <h4>  {bag.length} : מספר המוצרים </h4>
+            <h4>  {MyBag.length} : מספר המוצרים </h4>
             <br/>
             
             { 
             
-            bag.map((item,key)=>
+            MyBag.map((item,key)=>
 
-               <div >
-                <p>{item.title}</p>
+               <div className="col-md card">
+                <p className="title">{item.title}</p>
                 <Images  product={item} num={key}/>
-                <h5 >{item.price}:מחיר</h5>
-                <img src={bin} onClick={RemoveFromBag(key)}/>
-                
-                <label>________________________________</label>
-            </div>
-            
-            )
+                <h6>{item.price}:מחיר</h6>
+            </div>)
             }
            <div>
-           <h5> סה"כ לתשלום</h5>
-           <h5> {TotalPrice=bag.reduce((x,y) => parseInt(x)+ parseInt(y.price),0)} ש"ח  </h5>
+           <h4> סה"כ לתשלום</h4>
+           <h5 dir="rtl" >
+              {TotalPrice=MyBag.reduce((x,y) => parseInt(x)+ parseInt(y.price),0)}  <h5>ש"ח</h5>
+              </h5>
            
-           <button onClick={PassToForm}> מעבר לתשלום</button>
+           <button className="buy" onClick={click}>להזמנה</button>
            </div>
       </div>
-   )
-
-
-   
+   )   
 }
 else 
 {
     return(
         <div>
-        <h1 className="BagTitle"> תיק הקניות</h1>
-        <p>ריק</p>
+        <h1 className="BagTitle"> תיק הקניות ריק</h1>
         </div>
 
     )
@@ -64,4 +69,4 @@ else
 
 }
 
-export default bag;
+export default Bag;
